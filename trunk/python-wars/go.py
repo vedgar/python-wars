@@ -30,15 +30,14 @@ for enemy in range(zargons):
 	count += 1
 	
 
-
+turn = 0
 while True:
 
-	#list my ship	
-	for i in range(3): print '*' * 80
-	print 'The Good Ship', space.me.title
-	print 'Shields:', space.me.shields
 
-	for i in range(2): print '='*80	
+
+	print '*' * 80
+	print 'Turn',turn + 1
+	print '*' * 80
 	
 	#list enemies
 	print 'Enemies'
@@ -47,14 +46,37 @@ while True:
 	ships.sort()
 	short_names = {}
 	win = True
+	hero = True
 	for ship in ships:
 		ship = getattr(space, ship)
 		if ship.side == 'good': continue
 		win = False
 		short_names[ship.title[0].lower()] = ship
+		ship.recharge()
 		name = '(' + ship.title[0] + ')' + ship.title[1:]
-		shields = ship.shields
-		print '%s - %s%% - DV %s' % (name,shields,ship.dv)
+		if ship.shields == 30:
+			remaining = str(100)
+		else:
+			remaining = str((ship.shields / ship.max_shields) * 100)[:2]
+		print '%s - %s%% - DV %s' % (name,remaining,ship.dv)
+
+		if turn:
+			action = random.randrange(2)
+			if action == 0:
+				hero = ship.pulsar.action(ship,space.me)
+				if not hero:
+					print 'SHIP DESTROYED!!!'			
+					print 'You lose!!!'
+					print 'You lose!!!'
+					print 'You lose!!!'
+					sys.exit()		
+				
+			else:
+				print '	%s coming about for optimal firing position' % ship.title
+				ship.recharge()
+
+
+		
 
 	if win:
 		print 'You win!!!'
@@ -63,11 +85,18 @@ while True:
 		sys.exit()		
 
 
+	#list my ship	
+
+	for i in range(2): print '='*80	
+	print 'The Good Ship', space.me.title
+	print 'Shields:', space.me.shields
+
 	target = raw_input('Who is your target? ').lower()
 	target = short_names[target]
 	print 'Target:',target.title
 	print 'Fire (S)pinal Mount - Capacitor at %s %%' % space.me.spinal_mount.capacitor
-	print 'Fire (M)issle - %s missiles remaining' % space.me.missile.ammo			
+	if space.me.missile.ammo:
+		print 'Fire (M)issle - %s missiles remaining' % space.me.missile.ammo			
 	
 	action = raw_input('What is your action? ').lower()
 	if action == 's':
@@ -75,11 +104,11 @@ while True:
 		survived = space.me.spinal_mount.action(space.me,target)
 		if not survived:
 			delattr(space,target.id)
-	elif action == 'm':
+	elif action == 'm' and space.me.missile.ammo:
 		print 'Missile', target.title
 		survived = space.me.missile.action(space.me,target)
 		if not survived:
 			delattr(space,target.id)		
 		
-	space.me.spinal_mount.recharge()
-		
+	space.me.recharge()
+	turn += 1		
