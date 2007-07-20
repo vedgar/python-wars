@@ -1,6 +1,6 @@
 import random
 
-
+tab = '	'
 
 class Space(object):
 	pass
@@ -17,10 +17,10 @@ class Ship(object):
 	def take_damage(self, damage):
 		self.shields -= damage
 		if self.shields < 1:
-			print self.title, 'Destroyed!!!'
+			print tab + self.title, 'Destroyed!!!'
 			self.alive = False
 			return self.alive
-		print self.title + ' shields down to ' + str(self.shields) + ' of ' + str(self.max_shields) + '.'
+		print tab + self.title + ' shields down to ' + str(self.shields) + ' of ' + str(self.max_shields) + '.'
 		return self.alive
 	
 class Component(object):
@@ -44,14 +44,14 @@ class Spinal_Mount(Component):
 		self.capacitor = min(self.max_capacitor, self.capacitor + self.recharge_capacitor)		
 		
 	def action(self,me=None,enemy=None):
-		print 'Firing Spinal Mount!'
+		print tab + 'Firing Spinal Mount!'
 		hit = False
 		energy = 0
 		survived = True
 		for laser in range(10):
 			energy = (laser + 1) ** 2	
 			if energy > self.capacitor:
-				print 'Spinal Mount out of juice'
+				print tab + 'Spinal Mount out of juice'
 				break
 			if not hit:
 				av = random.randrange(me.av + self.av + laser)
@@ -59,16 +59,16 @@ class Spinal_Mount(Component):
 				if av > dv:
 					hit = True
 				else:
-					print 'Spinal Mount missed'
+					print tab + 'Spinal Mount missed'
 			if hit:
-				print 'Spinal Mount locked on'
+				print tab + 'Spinal Mount locked on'
 				survived = enemy.take_damage(10)
 			if not survived:
 				break
 
 		self.capacitor -= energy
-		print 'Spinal mount firing sequence over.'		
-		print 'Spinal mount capacitor at ',self.capacitor
+		print tab + 'Spinal mount firing sequence over.'		
+		print tab + 'Spinal mount capacitor at ',self.capacitor
 		return survived
 
 	
@@ -99,14 +99,14 @@ class Missile(Component):
 		
 	def action(self,me=None,enemy=None):
 		if self.ammo == 0:
-			print 'Out of missiles.'
+			print tab + 'Out of missiles.'
 			return True
-		print 'Launching missile!'
+		print tab + 'Launching missile!'
 		self.ammo -= 1
 		av = random.randrange(me.av + self.av)
 		dv = random.randrange(enemy.dv)		
 		if av < dv:
-			print 'Missile missed'		
+			print tab + 'Missile missed'		
 			return True
 		damage = (random.randrange(10) + 1) * (random.randrange(10) + 1)
 		return enemy.take_damage(damage)		
@@ -122,12 +122,15 @@ class ECM(Component):
 		return True
 
 class Frigate(Ship):
-	def __init__(self,name='',id=''):
+	def __init__(self,name='',id='',dv=None):
 		Ship.__init__(self)
 		self.title = name
 		self.id = id
 		self.av = 40
-		self.dv = 1 + (random.randrange(10) * random.randrange(10))
+		if dv:
+			self.dv = dv
+		else:
+			self.dv = 1 + (random.randrange(10) * random.randrange(10))
 		self.volume = 2
 		self.shields = 30
 		self.max_shields = 30
