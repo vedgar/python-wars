@@ -20,7 +20,9 @@ class Ship(object):
 			print tab + self.title, 'Destroyed!!!'
 			self.alive = False
 			return self.alive
-		print tab + self.title + ' shields down to ' + str(self.shields) + ' of ' + str(self.max_shields) + '.'
+		remaining = str(self.shields / self.max_shields * 100)[:2]
+		
+		print '%s%s shields down to %s%%.' % (tab,self.title,remaining)
 		return self.alive
 	
 class Component(object):
@@ -62,13 +64,12 @@ class Spinal_Mount(Component):
 					print tab + 'Spinal Mount missed'
 			if hit:
 				print tab + 'Spinal Mount locked on'
-				survived = enemy.take_damage(10)
+				survived = enemy.take_damage(random.randrange(10)+1)
 			if not survived:
 				break
 
 		self.capacitor -= energy
 		print tab + 'Spinal mount firing sequence over.'		
-		print tab + 'Spinal mount capacitor at ',self.capacitor
 		return survived
 
 	
@@ -81,7 +82,7 @@ class Pulsar(Component):
 		self.option = 'Fire (P)ulsar'		
 		
 	def action(self,me=None,enemy=None):
-		print self.title + ' firing Pulsar!'
+		print tab + me.title + ' firing Pulsar!'
 		av = random.randrange(me.av + self.av)
 		dv = random.randrange(enemy.dv)		
 		return enemy.take_damage(10)
@@ -108,6 +109,7 @@ class Missile(Component):
 		if av < dv:
 			print tab + 'Missile missed'		
 			return True
+		print tab + 'Missile hit!!!'					
 		damage = (random.randrange(10) + 1) * (random.randrange(10) + 1)
 		return enemy.take_damage(damage)		
 		
@@ -132,23 +134,27 @@ class Frigate(Ship):
 		else:
 			self.dv = 1 + (random.randrange(10) * random.randrange(10))
 		self.volume = 2
-		self.shields = 30
-		self.max_shields = 30
+		self.shields = 30.0
+		self.max_shields = 30.0
 		self.recharge_shields = 3
 		self.thrust = 8
 		self.pulsar = Pulsar()
 		self.ecm = ECM()			
 		self.side = 'bad'
+		
+	def recharge(self):
+		self.shields = min(self.shields + self.recharge_shields, self.max_shields)
 
 class Cruiser(Ship):
 	def __init__(self,name='',id=''):
+		Ship.__init__(self)
 		self.title = name	
 		self.id = id
 		self.av = 20
 		self.dv = 10
 		self.volume = 3
-		self.shields = 100
-		self.max_shields = 100
+		self.shields = 100.0
+		self.max_shields = 100.0
 		self.recharge_shields = 1
 		self.thrust = 5
 		self.spinal_mount = Spinal_Mount()
@@ -156,4 +162,6 @@ class Cruiser(Ship):
 		self.ecm = ECM()
 		self.side = 'good'		
 		
-		
+	def recharge(self):
+		self.shields = min(self.shields + self.recharge_shields, self.max_shields)
+		self.spinal_mount.recharge()		
