@@ -6,7 +6,7 @@ import sys
 
 enemies = 'arrogance,killer,demon,evil,slaughter,monster,couch,tempest,bunny'.split(',')
 
-name = raw_input('What is your ship called? ')
+name = 'Pythonista'
 while True:
 	zargons = raw_input('How many Zargons can you handle (1-9)? ')
 	try:
@@ -40,7 +40,7 @@ while True:
 	print '*' * 80
 	
 	#list enemies
-	print 'Enemies'
+	print 'Enemies       Shields  Defense'
 	ships = space.__dict__.keys()
 
 	ships.sort()
@@ -58,7 +58,9 @@ while True:
 			remaining = str(100)
 		else:
 			remaining = str((ship.shields / ship.max_shields) * 100)[:2]
-		print '%s - %s%% - DV %s' % (name,remaining,ship.dv)
+		pad = ''
+		for i in range(12-len(name)): pad += ' '
+		print '%s %s  %s%% -    %s' % (name,pad,remaining,ship.dv)
 
 		if turn:
 			action = random.randrange(2)
