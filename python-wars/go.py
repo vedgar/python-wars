@@ -95,8 +95,13 @@ while True:
 	print 'The Good Ship', space.me.title
 	print 'Shields:', space.me.shields
 
-	target = raw_input('Who is your target? ').lower()
-	target = short_names[target]
+	while True:
+		target = raw_input('Who is your target? ').lower()
+		try:
+			target = short_names[target]
+			break
+		except:
+			print 'No Zargon uses that designation'
 	print 'Target:',target.title
 	print 'Fire (S)pinal Mount - Capacitor at %s %%' % space.me.spinal_mount.capacitor
 	if space.me.missile.ammo:
