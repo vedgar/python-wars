@@ -165,3 +165,6 @@ class Cruiser(Ship):
 	def recharge(self):
 		self.shields = min(self.shields + self.recharge_shields, self.max_shields)
 		self.spinal_mount.recharge()		
+		
+	def damage_control(self):
+		self.shields = min(self.shields + 10, self.max_shields)
