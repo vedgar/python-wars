@@ -47,9 +47,11 @@ while True:
 	short_names = {}
 	win = True
 	hero = True
+	zargons = 0
 	for ship in ships:
 		ship = getattr(space, ship)
 		if ship.side == 'good': continue
+		zargons += 1
 		win = False
 		short_names[ship.title[0].lower()] = ship
 		ship.recharge()
@@ -99,6 +101,7 @@ while True:
 	print 'Fire (S)pinal Mount - Capacitor at %s %%' % space.me.spinal_mount.capacitor
 	if space.me.missile.ammo:
 		print 'Fire (M)issle - %s missiles remaining' % space.me.missile.ammo			
+	print 'Use (D)amage Control'
 	
 	action = raw_input('What is your action? ').lower()
 	if action == 's':
@@ -111,6 +114,13 @@ while True:
 		survived = space.me.missile.action(space.me,target)
 		if not survived:
 			delattr(space,target.id)		
+	elif action == 'd':
+		for i in range(random.randrange(zargons)+1):
+			space.me.damage_control()
+			space.me.recharge()			
+		print 'Damage control report:'
+		print '	Spinal Mount:', space.me.spinal_mount.capacitor
+		print '	Shields:', space.me.shields		
 		
 	space.me.recharge()
 	turn += 1		
