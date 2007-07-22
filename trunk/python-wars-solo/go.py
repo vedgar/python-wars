@@ -4,6 +4,7 @@ import md5
 import sys
 
 
+
 enemies = 'arrogance,killer,demon,evil,slaughter,monster,couch,tempest,bunny'.split(',')
 
 name = 'Pythonista'
@@ -20,13 +21,13 @@ while True:
 		
 	break
 
-space = stuff.Space()
-space.me = stuff.Cruiser(name)
+uni = stuff.Universe()
+uni.me = stuff.Cruiser(name)
 count = 0
 for enemy in range(zargons):
 	title = enemies[count].capitalize()
 	id = md5.new(title + str(count)).hexdigest()
-	setattr(space,id,stuff.Frigate(title,id,count * 10))
+	setattr(uni,id,stuff.Frigate(title,id,count * 10))
 	count += 1
 	
 
@@ -41,15 +42,14 @@ while True:
 	
 	#list enemies
 	print 'Enemies       Shields  Defense'
-	ships = space.__dict__.keys()
 
-	ships.sort()
+
 	short_names = {}
 	win = True
 	hero = True
 	zargons = 0
-	for ship in ships:
-		ship = getattr(space, ship)
+	for ship in uni.list_ships():
+
 		if ship.side == 'good': continue
 		zargons += 1
 		win = False
@@ -67,7 +67,7 @@ while True:
 		if turn:
 			action = random.randrange(2)
 			if action == 0:
-				hero = ship.pulsar.action(ship,space.me)
+				hero = ship.pulsar.action(ship,uni.me)
 				if not hero:
 					print 'SHIP DESTROYED!!!'			
 					print 'You lose!!!'
@@ -92,8 +92,8 @@ while True:
 	#list my ship	
 
 	for i in range(2): print '='*80	
-	print 'The Good Ship', space.me.title
-	print 'Shields:', space.me.shields
+	print 'The Good Ship', uni.me.title
+	print 'Shields:', uni.me.shields
 
 	while True:
 		target = raw_input('Who is your target? ').lower()
@@ -103,29 +103,29 @@ while True:
 		except:
 			print 'No Zargon uses that designation'
 	print 'Target:',target.title
-	print 'Fire (S)pinal Mount - Capacitor at %s %%' % space.me.spinal_mount.capacitor
-	if space.me.missile.ammo:
-		print 'Fire (M)issle - %s missiles remaining' % space.me.missile.ammo			
+	print 'Fire (S)pinal Mount - Capacitor at %s %%' % uni.me.spinal_mount.capacitor
+	if uni.me.missile.ammo:
+		print 'Fire (M)issle - %s missiles remaining' % uni.me.missile.ammo			
 	print 'Use (D)amage Control'
 	
 	action = raw_input('What is your action? ').lower()
 	if action == 's':
 		print 'Spinal Mount', target.title
-		survived = space.me.spinal_mount.action(space.me,target)
+		survived = uni.me.spinal_mount.action(uni.me,target)
 		if not survived:
-			delattr(space,target.id)
-	elif action == 'm' and space.me.missile.ammo:
+			delattr(uni,target.id)
+	elif action == 'm' and uni.me.missile.ammo:
 		print 'Missile', target.title
-		survived = space.me.missile.action(space.me,target)
+		survived = uni.me.missile.action(uni.me,target)
 		if not survived:
-			delattr(space,target.id)		
+			delattr(uni,target.id)		
 	elif action == 'd':
 		for i in range(random.randrange(zargons)+1):
-			space.me.damage_control()
-			space.me.recharge()			
+			uni.me.damage_control()
+			uni.me.recharge()			
 		print 'Damage control report:'
-		print '	Spinal Mount:', space.me.spinal_mount.capacitor
-		print '	Shields:', space.me.shields		
+		print '	Spinal Mount:', uni.me.spinal_mount.capacitor
+		print '	Shields:', uni.me.shields		
 		
-	space.me.recharge()
+	uni.me.recharge()
 	turn += 1		

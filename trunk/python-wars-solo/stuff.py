@@ -1,10 +1,22 @@
 import random
+import operator
 
 tab = '	'
 
-class Space(object):
-	pass
-
+class Universe(object):
+	def __init__(self):
+		self.dtype = 'universe'
+	
+	def list_ships(self):
+		ships = []
+		for local in self.__dict__.keys():
+			local = self.__dict__[local]
+			if hasattr(local,'dtype'):
+				if local.dtype == 'Ship':				
+					ships.append(local)
+		ships.sort(key=operator.attrgetter('title'))
+		return ships
+		
 class Ship(object):
 	def __init__(self):
 		self.dtype = 'Ship'
